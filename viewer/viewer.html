@@ -891,7 +891,7 @@ async function fetchJson(paths) {
   let lastError;
   for (const path of paths) {
     try {
-      const res = await fetch(path);
+      const res = await fetch(path, { cache: 'no-store' });
       if (!res.ok) throw new Error(`${path} returned ${res.status}`);
       return await res.json();
     } catch (err) {
@@ -901,10 +901,23 @@ async function fetchJson(paths) {
   throw lastError;
 }
 
+function buildCountiesFromData(data) {
+  const counts = {};
+  for (const row of data) {
+    const county = (row.county || '').trim();
+    if (county && county !== 'ALL') {
+      counts[county] = (counts[county] || 0) + 1;
+    }
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({ name, count }));
+}
+
 async function init() {
   try {
     allData = await fetchJson(['/data/prospects.json', '/api/data']);
-    counties = await fetchJson(['/data/counties.json', '/api/counties']);
+    counties = buildCountiesFromData(allData);
   } catch (err) {
     document.getElementById('table-body').innerHTML =
       '<tr><td colspan="8" style="padding:24px;color:#b00020;">Failed to load prospect data. Run <code>python scripts/build_viewer_data.py --demo</code> locally or start <code>python viewer/server.py</code>.</td></tr>';
