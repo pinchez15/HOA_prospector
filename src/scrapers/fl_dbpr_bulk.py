@@ -29,6 +29,7 @@ from src.models.association import (
     FilingStatus,
     ManagementStatus,
 )
+from src.utils.dbpr_mgmt import resolve_managing_entity
 
 logger = logging.getLogger(__name__)
 
@@ -133,8 +134,9 @@ def parse_condo_csv(content: str, region: str) -> list[Association]:
             mgmt_city = (row.get("Managing Entity City") or "").strip()
             mgmt_state = (row.get("Managing Entity State") or "").strip()
             mgmt_zip = (row.get("Managing Entity Zip") or "").strip()
-            mgmt_address_parts = [p for p in [mgmt_route, mgmt_street, mgmt_city, mgmt_state, mgmt_zip] if p]
-            mgmt_address = ", ".join(mgmt_address_parts) if mgmt_address_parts else None
+            mgmt_company, agent_name, mgmt_address = resolve_managing_entity(
+                mgmt_name, mgmt_route, mgmt_street, mgmt_city, mgmt_state, mgmt_zip
+            )
 
             assoc = Association(
                 community_name=(row.get("Condo Name") or "").strip(),
@@ -150,10 +152,10 @@ def parse_condo_csv(content: str, region: str) -> list[Association]:
                     row.get("Primary Status", ""),
                     row.get("Secondary Status", ""),
                 ),
-                management_status=_management_status(mgmt_name),
-                management_company_name=mgmt_name or None,
+                management_status=_management_status(mgmt_company or mgmt_name),
+                management_company_name=mgmt_company,
                 management_company_license=(row.get("Managing Entity Number") or "").strip() or None,
-                registered_agent_name=mgmt_name or None,
+                registered_agent_name=agent_name,
                 registered_agent_address=mgmt_address,
                 raw_data={
                     "region": region,
@@ -197,8 +199,9 @@ def parse_coop_csv(content: str) -> list[Association]:
             mgmt_zip = row[18].strip().strip('"') if len(row) > 18 else ""
 
             physical = ", ".join(p for p in [street, city, state, zipcode] if p)
-            mgmt_addr_parts = [p for p in [mgmt_route, mgmt_street, mgmt_city, mgmt_state, mgmt_zip] if p]
-            mgmt_address = ", ".join(mgmt_addr_parts) if mgmt_addr_parts else None
+            mgmt_company, agent_name, mgmt_address = resolve_managing_entity(
+                mgmt_entity_name, mgmt_route, mgmt_street, mgmt_city, mgmt_state, mgmt_zip
+            )
 
             assoc = Association(
                 community_name=name,
@@ -211,10 +214,10 @@ def parse_coop_csv(content: str) -> list[Association]:
                 unit_count=_parse_int(units),
                 date_established=_parse_date(recorded_date),
                 filing_status=_filing_status(primary_status, secondary_status),
-                management_status=_management_status(mgmt_entity_name),
-                management_company_name=mgmt_entity_name or None,
+                management_status=_management_status(mgmt_company or mgmt_entity_name),
+                management_company_name=mgmt_company,
                 management_company_license=mgmt_entity_num or None,
-                registered_agent_name=mgmt_entity_name or None,
+                registered_agent_name=agent_name,
                 registered_agent_address=mgmt_address,
                 raw_data={
                     "file_number": file_num,

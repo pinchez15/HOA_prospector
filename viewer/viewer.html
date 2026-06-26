@@ -808,7 +808,7 @@ body {
         </div>
         <div class="filter-group">
           <label>Mgmt Company</label>
-          <input type="text" id="filter-mgmt-company" placeholder="Company name...">
+          <input type="text" id="filter-mgmt-company" placeholder="e.g. Keys-Caldwell">
         </div>
         <button class="clear-filters-btn hidden" id="clear-filters" title="Reset all filters">Clear Filters</button>
       </div>
@@ -1012,8 +1012,12 @@ function applyFilters() {
     if (amenityVal === 'common' && !r.has_common_areas) return false;
     if (amenityVal === 'any' && !r.has_pool && !r.has_common_areas) return false;
     if (mgmtCompany) {
-      const co = (r.management_company_name || '').toLowerCase();
-      if (!co.includes(mgmtCompany)) return false;
+      const hay = [
+        r.management_company_name,
+        r.registered_agent_name,
+        r.registered_agent_address,
+      ].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(mgmtCompany)) return false;
     }
     return true;
   });
@@ -1251,6 +1255,7 @@ function openDrawer(id) {
     ]},
     { title: 'Management Company', fields: [
       ['Company', r.management_company_name],
+      ['Association', r.registered_agent_name],
       ['License', r.management_company_license],
     ]},
     { title: 'Registered Agent', fields: [

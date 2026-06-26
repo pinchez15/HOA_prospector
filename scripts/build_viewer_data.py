@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from viewer.server import load_csv  # noqa: E402
+from src.utils.dbpr_mgmt import normalize_row_cam_fields  # noqa: E402
 
 OUTPUT_DIR = ROOT / "viewer" / "data"
 
@@ -78,7 +79,7 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Loading and enriching prospect data...")
-    rows = load_csv()
+    rows = [normalize_row_cam_fields(r) for r in load_csv()]
 
     if args.demo:
         include = [c.strip() for c in args.include_counties.split(",") if c.strip()]

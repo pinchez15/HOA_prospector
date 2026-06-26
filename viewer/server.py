@@ -3,9 +3,15 @@
 import csv
 import json
 import re
+import sys
 from collections import defaultdict
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from src.utils.dbpr_mgmt import normalize_row_cam_fields
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "output" / "combined_hoa_data.csv"
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "output"
@@ -278,7 +284,7 @@ def load_csv():
                 row["prop_match_score"] = 0
                 row["prop_match_name"] = None
 
-            rows.append(row)
+            rows.append(normalize_row_cam_fields(row))
 
             if (i + 1) % 10000 == 0:
                 print(f"  Processed {i + 1} HOA records...")
