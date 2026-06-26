@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArborKey — Prospects</title>
+<style>
+/* ── Reset & base ───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f8f9fa;
+  color: #1a1a1a;
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ────────────────────────────────────────── */
+.sidebar {
+  width: 200px;
+  min-width: 200px;
+  background: #fafdf6;
+  border-right: 1px solid #e8e8e4;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #e8e8e4;
+}
+.sidebar-brand .logo {
+  width: 28px;
+  height: 28px;
+  background: #2d6a2e;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+}
+.sidebar-brand span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.sidebar-brand .collapse-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 14px;
+}
+.sidebar-nav {
+  padding: 8px 8px;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #555;
+  font-size: 14px;
+  cursor: default;
+  margin-bottom: 2px;
+  text-decoration: none;
+}
+.nav-item.active {
+  background: #3a7d3c;
+  color: white;
+}
+.nav-item .icon {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+}
+.sidebar-user {
+  border-top: 1px solid #e8e8e4;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #d14d4d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+.user-info {
+  font-size: 13px;
+  line-height: 1.3;
+}
+.user-info .name { font-weight: 600; color: #1a1a1a; }
+.user-info .org { color: #888; font-size: 12px; }
+
+/* ── Main content ───────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main-header {
+  padding: 20px 28px 0;
+}
+.main-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.main-header .subtitle {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.demo-banner {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  background: #eef6ee;
+  border: 1px solid #c8dfc9;
+  border-radius: 6px;
+  color: #2d6a2e;
+  font-size: 13px;
+}
+
+/* ── Tab bar ────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0 28px;
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 7px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+.tab-btn:first-child { border-radius: 6px 0 0 6px; }
+.tab-btn:last-child { border-radius: 0 6px 6px 0; }
+.tab-btn + .tab-btn { border-left: none; }
+.tab-btn.active {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* ── Content scroll area ────────────────────────────── */
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28px 28px;
+}
+
+/* ── KPI cards row ──────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: white;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+.kpi-card.highlight {
+  border-color: #c5dfc6;
+  background: #f9fdf6;
+}
+.kpi-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kpi-label .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.kpi-label .dot.green { background: #3a7d3c; }
+.kpi-label .dot.gold { background: #c9a227; }
+.kpi-label .dot.blue { background: #4a90d9; }
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.kpi-sub {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/* ── Quick-filter area ──────────────────────────────── */
+.filter-section {
+  background: white;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.filter-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #1a1a1a;
+}
+.filter-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.filter-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.filter-group select,
+.filter-group input {
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  min-width: 160px;
+  background: white;
+  color: #333;
+}
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: #3a7d3c;
+  box-shadow: 0 0 0 2px rgba(58, 125, 60, 0.15);
+}
+.county-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.county-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #555;
+}
+.county-chip:hover {
+  border-color: #3a7d3c;
+  color: #3a7d3c;
+}
+.county-chip.selected {
+  background: #3a7d3c;
+  border-color: #3a7d3c;
+  color: white;
+}
+.county-chip .count {
+  font-size: 11px;
+  opacity: 0.7;
+}
+.pill-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pill {
+  padding: 5px 14px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #555;
+}
+.pill:hover { border-color: #3a7d3c; color: #3a7d3c; }
+.pill.selected { background: #3a7d3c; border-color: #3a7d3c; color: white; }
+
+/* ── Clear filters button ───────────────────────────── */
+.clear-filters-btn {
+  padding: 7px 16px;
+  border: 1px solid #d14d4d;
+  border-radius: 6px;
+  background: white;
+  color: #d14d4d;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  align-self: flex-end;
+}
+.clear-filters-btn:hover {
+  background: #d14d4d;
+  color: white;
+}
+.clear-filters-btn.hidden { display: none; }
+.hidden { display: none; }
+
+/* ── Amenity icons ──────────────────────────────────── */
+.amenity-icons {
+  display: flex;
+  gap: 4px;
+}
+.amenity-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.amenity-pool { background: #e0f2fe; color: #0369a1; }
+.amenity-common { background: #e8fde8; color: #2d6a2e; }
+
+/* ── Action bar ─────────────────────────────────────── */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.result-count {
+  font-size: 13px;
+  color: #888;
+}
+.result-count strong {
+  color: #1a1a1a;
+}
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sort-group label {
+  font-size: 12px;
+  color: #888;
+}
+.sort-group select {
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+}
+
+/* ── Prospect table ─────────────────────────────────── */
+.prospect-table-wrap {
+  background: white;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.prospect-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.prospect-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e8e8e4;
+  background: #fafafa;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.prospect-table th:hover { color: #3a7d3c; }
+.prospect-table th .sort-arrow { font-size: 10px; margin-left: 4px; }
+.prospect-table td {
+  padding: 10px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.prospect-table tr:hover td {
+  background: #f9fdf6;
+}
+.prospect-table tr:last-child td {
+  border-bottom: none;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-condo { background: #e8f4fd; color: #2171b5; }
+.badge-hoa { background: #e8fde8; color: #2d6a2e; }
+.badge-coop { background: #fef3cd; color: #856404; }
+.badge-unknown { background: #f0f0f0; color: #888; }
+
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-active { background: #3a7d3c; }
+.status-delinquent { background: #d4a017; }
+.status-inactive { background: #d14d4d; }
+.status-unknown { background: #ccc; }
+
+/* ── Pagination ─────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px;
+  border-top: 1px solid #e8e8e4;
+}
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+.pagination button:hover:not(:disabled) {
+  border-color: #3a7d3c;
+  color: #3a7d3c;
+}
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.pagination button.active {
+  background: #3a7d3c;
+  border-color: #3a7d3c;
+  color: white;
+}
+.pagination .page-info {
+  font-size: 13px;
+  color: #888;
+  margin: 0 8px;
+}
+
+/* ── Detail drawer ──────────────────────────────────── */
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 100;
+}
+.drawer-overlay.open { display: block; }
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 560px;
+  height: 100vh;
+  background: #f8f9fa;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+  z-index: 101;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-header {
+  background: white;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e8e8e4;
+  position: relative;
+}
+.drawer-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #f0f0f0;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #888;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.drawer-close:hover { background: #e0e0e0; color: #333; }
+.drawer h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  padding-right: 40px;
+  color: #1a1a1a;
+}
+.drawer .drawer-subtitle {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 0;
+}
+.drawer .drawer-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+/* ── Map section ──────────────────────────────────────── */
+.drawer-map {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #e8e8e4;
+  cursor: grab;
+}
+.drawer-map svg {
+  width: 100%;
+  height: 100%;
+}
+.drawer-map .map-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawer-map .map-overlay button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  font-size: 16px;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.drawer-map .map-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  background: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.drawer-map .map-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  z-index: 2;
+}
+/* ── Drawer body ──────────────────────────────────────── */
+.drawer-body {
+  padding: 16px 24px 24px;
+}
+.drawer-section {
+  background: white;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.drawer-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.drawer-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.drawer-field .label { color: #888; }
+.drawer-field .value { color: #1a1a1a; font-weight: 500; text-align: right; max-width: 60%; word-break: break-word; }
+.drawer-field .value.highlight { color: #2d6a2e; font-weight: 700; }
+.drawer-enrichment-bar {
+  background: white;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.drawer-enrichment-bar .enrich-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+}
+.drawer-enrichment-bar .enrich-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  background: #3a7d3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.5;
+}
+.drawer-enrichment-bar .enrich-btn:hover {
+  opacity: 0.7;
+}
+
+/* ── Loading overlay ────────────────────────────────── */
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #888;
+  font-size: 15px;
+}
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e8e8e4;
+  border-top-color: #3a7d3c;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ──────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">A</div>
+    <span>ArborKey</span>
+    <button class="collapse-btn">&lsaquo;</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active">
+      <span class="icon">&#9783;</span>
+      <span>Prospects</span>
+    </div>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">N</div>
+    <div class="user-info">
+      <div class="name">Nate Pinches</div>
+      <div class="org">ArborKey</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main content ─────────────────────────────────── -->
+<div class="main">
+  <div class="main-header">
+    <h1>Prospects</h1>
+    <div class="subtitle">Find HOA leads in your area — filter, sort, and drill in</div>
+    <div class="demo-banner hidden" id="demo-banner">Demo dataset — sample of enriched HOA prospects for evaluation</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active">Prospect Finder</button>
+    <button class="tab-btn">All Data</button>
+  </div>
+
+  <div class="content-scroll">
+
+    <!-- KPI cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label"><span class="dot green"></span> Total Prospects</div>
+        <div class="kpi-value" id="kpi-total">—</div>
+        <div class="kpi-sub">matching your filters</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span class="dot gold"></span> Self-Managed</div>
+        <div class="kpi-value" id="kpi-self">—</div>
+        <div class="kpi-sub" id="kpi-self-sub">potential opportunities</div>
+      </div>
+      <div class="kpi-card highlight">
+        <div class="kpi-label"><span class="dot blue"></span> Avg. Units</div>
+        <div class="kpi-value" id="kpi-units">—</div>
+        <div class="kpi-sub">per community</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Property Data</div>
+        <div class="kpi-value" id="kpi-propdata">—</div>
+        <div class="kpi-sub" id="kpi-propdata-sub">with property values</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+      <h3>Filter Prospects</h3>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>State</label>
+          <select id="filter-state">
+            <option value="">All States</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Search</label>
+          <input type="text" id="filter-search" placeholder="Community name or address...">
+        </div>
+        <div class="filter-group">
+          <label>Min Units</label>
+          <input type="number" id="filter-min-units" placeholder="e.g. 20" min="0">
+        </div>
+        <div class="filter-group">
+          <label>Type</label>
+          <select id="filter-type">
+            <option value="">All Types</option>
+            <option value="condo">Condo</option>
+            <option value="hoa">HOA</option>
+            <option value="cooperative">Co-op</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Management</label>
+          <select id="filter-mgmt">
+            <option value="">All</option>
+            <option value="self_managed">Self-Managed</option>
+            <option value="professionally_managed">Professionally Managed</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filing Status</label>
+          <select id="filter-status">
+            <option value="">All</option>
+            <option value="active">Active</option>
+            <option value="delinquent">Delinquent</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Amenities</label>
+          <select id="filter-amenity">
+            <option value="">All</option>
+            <option value="pool">Has Pool / Recreation</option>
+            <option value="common">Has Common Areas</option>
+            <option value="any">Has Any Amenity</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Mgmt Company</label>
+          <input type="text" id="filter-mgmt-company" placeholder="Company name...">
+        </div>
+        <button class="clear-filters-btn hidden" id="clear-filters" title="Reset all filters">Clear Filters</button>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <label style="font-size:12px; font-weight:600; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Counties — pick your area</label>
+      </div>
+      <div class="county-chips" id="county-chips">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <div class="result-count" id="result-count">Loading...</div>
+      <div class="sort-group">
+        <label>Sort by</label>
+        <select id="sort-select">
+          <option value="unit_count_desc">Units (largest first)</option>
+          <option value="unit_count_asc">Units (smallest first)</option>
+          <option value="value_desc">Property Value (highest)</option>
+          <option value="value_asc">Property Value (lowest)</option>
+          <option value="sale_desc">Sale Price (highest)</option>
+          <option value="name_asc">Name A-Z</option>
+          <option value="name_desc">Name Z-A</option>
+          <option value="mgmt_asc">Mgmt Company A-Z</option>
+          <option value="mgmt_desc">Mgmt Company Z-A</option>
+          <option value="date_desc">Newest Established</option>
+          <option value="date_asc">Oldest Established</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="prospect-table-wrap">
+      <table class="prospect-table" id="prospect-table">
+        <thead>
+          <tr>
+            <th>Community Name</th>
+            <th>County</th>
+            <th>Type</th>
+            <th>Units</th>
+            <th>Property Value</th>
+            <th>Avg Sale Price</th>
+            <th>Amenities</th>
+            <th>Status</th>
+            <th>Mgmt Company</th>
+            <th>Managed</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="10"><div class="loading-overlay"><div class="spinner"></div>Loading prospect data...</div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+  </div><!-- /content-scroll -->
+</div><!-- /main -->
+
+<!-- ── Detail drawer ────────────────────────────────── -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <button class="drawer-close" id="drawer-close">&times;</button>
+    <h2 id="drawer-title"></h2>
+    <div class="drawer-subtitle" id="drawer-subtitle"></div>
+    <div class="drawer-badges" id="drawer-badges"></div>
+  </div>
+  <div class="drawer-map" id="drawer-map"></div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let allData = [];
+let filtered = [];
+let counties = [];
+let selectedCounties = new Set();
+let page = 0;
+const PAGE_SIZE = 50;
+
+// ── Init ───────────────────────────────────────────────
+async function fetchJson(paths) {
+  let lastError;
+  for (const path of paths) {
+    try {
+      const res = await fetch(path);
+      if (!res.ok) throw new Error(`${path} returned ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
+async function init() {
+  try {
+    allData = await fetchJson(['/data/prospects.json', '/api/data']);
+    counties = await fetchJson(['/data/counties.json', '/api/counties']);
+  } catch (err) {
+    document.getElementById('table-body').innerHTML =
+      '<tr><td colspan="10" style="padding:24px;color:#b00020;">Failed to load prospect data. Run <code>python scripts/build_viewer_data.py --demo</code> locally or start <code>python viewer/server.py</code>.</td></tr>';
+    console.error(err);
+    return;
+  }
+
+  if (allData.length <= 6000) {
+    document.getElementById('demo-banner').classList.remove('hidden');
+  }
+
+  populateStateDropdown();
+  renderCountyChips();
+  applyFilters();
+}
+
+// ── State dropdown ─────────────────────────────────────
+function populateStateDropdown() {
+  const stateCounts = {};
+  for (const r of allData) {
+    const s = r.state || '';
+    if (s) stateCounts[s] = (stateCounts[s] || 0) + 1;
+  }
+  const sel = document.getElementById('filter-state');
+  const sorted = Object.entries(stateCounts).sort((a, b) => b[1] - a[1]);
+  for (const [st, count] of sorted) {
+    const opt = document.createElement('option');
+    opt.value = st;
+    opt.textContent = `${st} (${count.toLocaleString()})`;
+    sel.appendChild(opt);
+  }
+}
+
+// ── County chips ───────────────────────────────────────
+function renderCountyChips() {
+  const container = document.getElementById('county-chips');
+  // Show top 20 counties
+  const top = counties.slice(0, 20);
+  container.innerHTML = top.map(c => {
+    const sel = selectedCounties.has(c.name) ? ' selected' : '';
+    return `<button class="county-chip${sel}" data-county="${c.name}">${c.name} <span class="count">(${c.count.toLocaleString()})</span></button>`;
+  }).join('');
+
+  container.querySelectorAll('.county-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.county;
+      if (selectedCounties.has(name)) {
+        selectedCounties.delete(name);
+        btn.classList.remove('selected');
+      } else {
+        selectedCounties.add(name);
+        btn.classList.add('selected');
+      }
+      page = 0;
+      applyFilters();
+    });
+  });
+}
+
+// ── Filters ────────────────────────────────────────────
+function applyFilters() {
+  const stateVal = document.getElementById('filter-state').value;
+  const search = document.getElementById('filter-search').value.toLowerCase().trim();
+  const minUnits = parseInt(document.getElementById('filter-min-units').value) || 0;
+  const typeVal = document.getElementById('filter-type').value;
+  const mgmtVal = document.getElementById('filter-mgmt').value;
+  const statusVal = document.getElementById('filter-status').value;
+  const amenityVal = document.getElementById('filter-amenity').value;
+  const mgmtCompany = document.getElementById('filter-mgmt-company').value.toLowerCase().trim();
+
+  // Show/hide clear button
+  const hasFilters = stateVal || search || minUnits || typeVal || mgmtVal || statusVal || amenityVal || mgmtCompany || selectedCounties.size > 0;
+  document.getElementById('clear-filters').classList.toggle('hidden', !hasFilters);
+
+  filtered = allData.filter(r => {
+    if (stateVal && r.state !== stateVal) return false;
+    if (selectedCounties.size > 0 && !selectedCounties.has(r.county)) return false;
+    if (search) {
+      const hay = ((r.community_name || '') + ' ' + (r.physical_address || '')).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    if (minUnits && (r.unit_count == null || r.unit_count < minUnits)) return false;
+    if (typeVal && r.community_type !== typeVal) return false;
+    if (mgmtVal && r.management_status !== mgmtVal) return false;
+    if (statusVal && r.filing_status !== statusVal) return false;
+    if (amenityVal === 'pool' && !r.has_pool) return false;
+    if (amenityVal === 'common' && !r.has_common_areas) return false;
+    if (amenityVal === 'any' && !r.has_pool && !r.has_common_areas) return false;
+    if (mgmtCompany) {
+      const co = (r.management_company_name || '').toLowerCase();
+      if (!co.includes(mgmtCompany)) return false;
+    }
+    return true;
+  });
+
+  applySorting();
+  updateKPIs();
+  renderTable();
+}
+
+function applySorting() {
+  const sort = document.getElementById('sort-select').value;
+  filtered.sort((a, b) => {
+    switch (sort) {
+      case 'unit_count_desc': return (b.unit_count || 0) - (a.unit_count || 0);
+      case 'unit_count_asc': return (a.unit_count || 0) - (b.unit_count || 0);
+      case 'value_desc': return (b.property_value || 0) - (a.property_value || 0);
+      case 'value_asc': return (a.property_value || 0) - (b.property_value || 0);
+      case 'sale_desc': return (b.avg_sale_price || 0) - (a.avg_sale_price || 0);
+      case 'name_asc': return (a.community_name || '').localeCompare(b.community_name || '');
+      case 'name_desc': return (b.community_name || '').localeCompare(a.community_name || '');
+      case 'mgmt_asc': return (a.management_company_name || 'zzz').localeCompare(b.management_company_name || 'zzz');
+      case 'mgmt_desc': return (b.management_company_name || '').localeCompare(a.management_company_name || '');
+      case 'date_desc': return (b.date_established || '').localeCompare(a.date_established || '');
+      case 'date_asc': return (a.date_established || '').localeCompare(b.date_established || '');
+    }
+    return 0;
+  });
+}
+
+// ── KPIs ───────────────────────────────────────────────
+function updateKPIs() {
+  document.getElementById('kpi-total').textContent = filtered.length.toLocaleString();
+
+  const selfManaged = filtered.filter(r => r.management_status === 'self_managed').length;
+  document.getElementById('kpi-self').textContent = selfManaged.toLocaleString();
+  document.getElementById('kpi-self-sub').textContent =
+    `${((selfManaged / Math.max(filtered.length, 1)) * 100).toFixed(0)}% of filtered`;
+
+  const withUnits = filtered.filter(r => r.unit_count != null && r.unit_count > 0);
+  const avgUnits = withUnits.length > 0
+    ? Math.round(withUnits.reduce((s, r) => s + r.unit_count, 0) / withUnits.length)
+    : 0;
+  document.getElementById('kpi-units').textContent = avgUnits.toLocaleString();
+
+  const withPropData = filtered.filter(r => r.property_value != null && r.property_value > 0).length;
+  document.getElementById('kpi-propdata').textContent = withPropData.toLocaleString();
+  document.getElementById('kpi-propdata-sub').textContent =
+    `${((withPropData / Math.max(filtered.length, 1)) * 100).toFixed(0)}% have property values`;
+}
+
+// ── Table rendering ────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  const start = page * PAGE_SIZE;
+  const pageData = filtered.slice(start, start + PAGE_SIZE);
+
+  if (pageData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#888;">No prospects match your filters. Try broadening your search.</td></tr>';
+  } else {
+    tbody.innerHTML = pageData.map(r => `
+      <tr style="cursor:pointer" data-id="${r._id}">
+        <td title="${esc(r.community_name)}">${esc(r.community_name || '—')}</td>
+        <td>${esc(r.county || '—')}</td>
+        <td>${typeBadge(r.community_type)}</td>
+        <td>${r.unit_count != null ? r.unit_count.toLocaleString() : '—'}</td>
+        <td>${fmtDollar(r.property_value)}</td>
+        <td>${fmtDollar(r.avg_sale_price)}</td>
+        <td>${amenityIcons(r)}</td>
+        <td>${statusDot(r.filing_status)} ${esc(capitalize(r.filing_status || 'unknown'))}</td>
+        <td title="${esc(r.management_company_name)}">${esc(truncate(r.management_company_name, 30))}</td>
+        <td>${esc(mgmtLabel(r.management_status))}</td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('tr').forEach(tr => {
+      tr.addEventListener('click', () => openDrawer(parseInt(tr.dataset.id)));
+    });
+  }
+
+  document.getElementById('result-count').innerHTML =
+    `Showing <strong>${start + 1}–${Math.min(start + PAGE_SIZE, filtered.length)}</strong> of <strong>${filtered.length.toLocaleString()}</strong> prospects`;
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const container = document.getElementById('pagination');
+  if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+  let html = `<button ${page === 0 ? 'disabled' : ''} data-page="${page - 1}">&laquo; Prev</button>`;
+
+  // Show max 7 page buttons
+  const range = getPageRange(page, totalPages, 7);
+  for (const p of range) {
+    if (p === '...') {
+      html += `<span style="color:#888;padding:0 4px;">...</span>`;
+    } else {
+      html += `<button class="${p === page ? 'active' : ''}" data-page="${p}">${p + 1}</button>`;
+    }
+  }
+
+  html += `<button ${page >= totalPages - 1 ? 'disabled' : ''} data-page="${page + 1}">Next &raquo;</button>`;
+  html += `<span class="page-info">Page ${page + 1} of ${totalPages}</span>`;
+
+  container.innerHTML = html;
+  container.querySelectorAll('button[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      page = parseInt(btn.dataset.page);
+      renderTable();
+      // Scroll table into view
+      document.querySelector('.prospect-table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+function getPageRange(current, total, maxButtons) {
+  if (total <= maxButtons) return Array.from({ length: total }, (_, i) => i);
+  const pages = [];
+  pages.push(0);
+  let start = Math.max(1, current - 2);
+  let end = Math.min(total - 2, current + 2);
+  if (start > 1) pages.push('...');
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 2) pages.push('...');
+  pages.push(total - 1);
+  return pages;
+}
+
+// ── Detail drawer ──────────────────────────────────────
+function generateDemoMap(communityName) {
+  // Seeded pseudo-random from community name for consistent maps per community
+  let seed = 0;
+  for (let i = 0; i < (communityName || '').length; i++) seed = ((seed << 5) - seed + communityName.charCodeAt(i)) | 0;
+  const rand = () => { seed = (seed * 16807 + 0) % 2147483647; return (seed & 0x7fffffff) / 2147483647; };
+
+  const w = 560, h = 220;
+  let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Background
+  svg += `<rect width="${w}" height="${h}" fill="#e8f4e8"/>`;
+
+  // Random blocks (buildings/parcels) in beige/tan
+  for (let i = 0; i < 18; i++) {
+    const bx = rand() * w, by = rand() * h;
+    const bw = 20 + rand() * 60, bh = 15 + rand() * 40;
+    svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#f0ece0" stroke="#ddd8c8" stroke-width="0.5" rx="1"/>`;
+  }
+
+  // Roads (gray lines)
+  const roadY1 = 40 + rand() * 60, roadY2 = 140 + rand() * 40;
+  const roadX1 = 100 + rand() * 80, roadX2 = 350 + rand() * 80;
+  svg += `<line x1="0" y1="${roadY1}" x2="${w}" y2="${roadY1}" stroke="#d0d0d0" stroke-width="6"/>`;
+  svg += `<line x1="0" y1="${roadY2}" x2="${w}" y2="${roadY2}" stroke="#d0d0d0" stroke-width="6"/>`;
+  svg += `<line x1="${roadX1}" y1="0" x2="${roadX1}" y2="${h}" stroke="#d0d0d0" stroke-width="6"/>`;
+  svg += `<line x1="${roadX2}" y1="0" x2="${roadX2}" y2="${h}" stroke="#d0d0d0" stroke-width="4"/>`;
+
+  // Highway (thicker, darker)
+  const hwyX = 200 + rand() * 160;
+  svg += `<line x1="${hwyX}" y1="0" x2="${hwyX}" y2="${h}" stroke="#a0a0a0" stroke-width="8"/>`;
+  svg += `<line x1="${hwyX}" y1="0" x2="${hwyX}" y2="${h}" stroke="#c8c8c8" stroke-width="2" stroke-dasharray="8 6"/>`;
+
+  // Water features (blue blobs — lakes, canals, pools)
+  for (let i = 0; i < 5 + Math.floor(rand() * 6); i++) {
+    const cx = rand() * w, cy = rand() * h;
+    const rx = 8 + rand() * 30, ry = 5 + rand() * 20;
+    svg += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#b3d9f2" stroke="#8ec4e8" stroke-width="0.5"/>`;
+  }
+
+  // Curvy community roads (lighter)
+  for (let i = 0; i < 3; i++) {
+    const sx = rand() * w, sy = rand() * h;
+    const c1x = sx + (rand() - 0.5) * 120, c1y = sy + (rand() - 0.5) * 80;
+    const ex = sx + (rand() - 0.5) * 200, ey = sy + (rand() - 0.5) * 120;
+    svg += `<path d="M${sx},${sy} Q${c1x},${c1y} ${ex},${ey}" fill="none" stroke="#d8d8d8" stroke-width="3"/>`;
+  }
+
+  // Green areas (parks)
+  for (let i = 0; i < 2; i++) {
+    const px = rand() * w * 0.7, py = rand() * h * 0.7;
+    svg += `<rect x="${px}" y="${py}" width="${30 + rand() * 50}" height="${20 + rand() * 30}" fill="#c5e8c5" rx="4" stroke="#a8d8a8" stroke-width="0.5"/>`;
+  }
+
+  // Community label
+  const shortName = (communityName || 'Community').split(/[,\s]+/).slice(0, 3).join(' ');
+  svg += `<text x="${w/2}" y="${h/2 + 20}" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#444">${shortName}</text>`;
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function openDrawer(id) {
+  const r = allData.find(x => x._id === id);
+  if (!r) return;
+
+  // Header
+  document.getElementById('drawer-title').textContent = r.community_name || 'Unknown';
+  document.getElementById('drawer-subtitle').textContent =
+    `${r.physical_address || 'Address unavailable'}`;
+
+  // Badges
+  let badgeHtml = typeBadge(r.community_type);
+  if (r.has_pool) badgeHtml += '<span class="amenity-tag amenity-pool">Pool</span>';
+  if (r.has_common_areas) badgeHtml += '<span class="amenity-tag amenity-common">Common Areas</span>';
+  badgeHtml += `<span class="badge badge-unknown">${r.county || ''}, ${r.state || ''}</span>`;
+  if (r.unit_count != null) badgeHtml += `<span class="badge badge-unknown">${r.unit_count} units</span>`;
+  document.getElementById('drawer-badges').innerHTML = badgeHtml;
+
+  // Map
+  const mapContainer = document.getElementById('drawer-map');
+  mapContainer.innerHTML = generateDemoMap(r.community_name)
+    + `<div class="map-label">Satellite View — Demo</div>`
+    + `<div class="map-pin"><svg width="24" height="36" viewBox="0 0 24 36"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#d14d4d"/><circle cx="12" cy="12" r="5" fill="white"/></svg></div>`
+    + `<div class="map-overlay"><button title="Zoom in">+</button><button title="Zoom out">&minus;</button></div>`;
+
+  // Sections
+  const sections = [
+    { title: 'Community Details', fields: [
+      ['Type', capitalize(r.community_type)],
+      ['Unit Count', r.unit_count != null ? r.unit_count.toLocaleString() : '—'],
+      ['Established', r.date_established || '—'],
+      ['Filing Status', capitalize(r.filing_status), r.filing_status === 'delinquent' ? 'highlight' : ''],
+      ['Management', mgmtLabel(r.management_status)],
+    ]},
+    { title: 'Property Valuation', fields: [
+      ['Total Property Value', r.property_value != null ? '$' + r.property_value.toLocaleString() : null, 'highlight'],
+      ['Avg Unit Value', r.avg_unit_value != null ? '$' + r.avg_unit_value.toLocaleString() : null],
+      ['Median Value', r.median_value != null ? '$' + r.median_value.toLocaleString() : null],
+      ['Avg Sale Price', r.avg_sale_price != null ? '$' + r.avg_sale_price.toLocaleString() : null],
+      ['Max Sale Price', r.max_sale_price != null ? '$' + r.max_sale_price.toLocaleString() : null],
+    ]},
+    { title: 'Buildings & Land', fields: [
+      ['Total Parcels', r.total_parcels],
+      ['Total Buildings', r.total_buildings],
+      ['Units (Property Data)', r.total_units_prop],
+      ['Avg Living Area', r.avg_sqft != null ? r.avg_sqft.toLocaleString() + ' sqft' : null],
+      ['Avg Year Built', r.avg_year_built],
+      ['Oldest Year Built', r.oldest_year_built],
+      ['Pool / Recreation', r.has_pool ? 'Yes' : (r.prop_match_score > 0 ? 'No' : null)],
+      ['Common Areas', r.has_common_areas ? 'Yes' : (r.prop_match_score > 0 ? 'No' : null)],
+    ]},
+    { title: 'Location', fields: [
+      ['Address', r.physical_address],
+      ['Mailing', r.mailing_address],
+      ['County', r.county],
+      ['State', r.state],
+    ]},
+    { title: 'Management Company', fields: [
+      ['Company', r.management_company_name],
+      ['License', r.management_company_license],
+    ]},
+    { title: 'Registered Agent', fields: [
+      ['Name', r.registered_agent_name],
+      ['Address', r.registered_agent_address],
+    ]},
+    { title: 'Data Match', fields: [
+      ['Source', r.source],
+      ['Source ID', r.source_id],
+      ['Property Match', r.prop_match_name],
+      ['Match Confidence', r.prop_match_score > 0 ? (r.prop_match_score * 100).toFixed(0) + '%' : null],
+    ]},
+  ];
+
+  let html = '';
+  for (const sec of sections) {
+    const hasData = sec.fields.some(([, v]) => v && v !== '—');
+    if (!hasData) continue;
+    html += `<div class="drawer-section"><h4>${sec.title}</h4>`;
+    for (const [label, value, cls] of sec.fields) {
+      const valCls = cls ? `value ${cls}` : 'value';
+      html += `<div class="drawer-field"><span class="label">${label}</span><span class="${valCls}">${esc(value || '—')}</span></div>`;
+    }
+    html += `</div>`;
+  }
+
+  // Enrichment teaser
+  html += `<div class="drawer-enrichment-bar">
+    <div class="enrich-label">Want more data on this community?</div>
+    <button class="enrich-btn" title="Coming soon">Enrich This Prospect</button>
+  </div>`;
+
+  document.getElementById('drawer-body').innerHTML = html;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+
+// ── Helpers ────────────────────────────────────────────
+function esc(s) {
+  if (!s) return '—';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function capitalize(s) {
+  if (!s) return '';
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function typeBadge(t) {
+  const cls = { condo: 'badge-condo', hoa: 'badge-hoa', cooperative: 'badge-coop' }[t] || 'badge-unknown';
+  return `<span class="badge ${cls}">${capitalize(t || 'unknown')}</span>`;
+}
+
+function statusDot(s) {
+  const cls = { active: 'status-active', delinquent: 'status-delinquent', inactive: 'status-inactive' }[s] || 'status-unknown';
+  return `<span class="status-dot ${cls}"></span>`;
+}
+
+function mgmtLabel(s) {
+  if (s === 'self_managed') return 'Self-Managed';
+  if (s === 'professionally_managed') return 'Professional';
+  return 'Unknown';
+}
+
+function fmtDollar(v) {
+  if (v == null || v === 0) return '<span style="color:#ccc">—</span>';
+  if (v >= 1000000) return '$' + (v / 1000000).toFixed(1) + 'M';
+  if (v >= 1000) return '$' + (v / 1000).toFixed(0) + 'K';
+  return '$' + v.toLocaleString();
+}
+
+function amenityIcons(r) {
+  const tags = [];
+  if (r.has_pool) tags.push('<span class="amenity-tag amenity-pool">Pool</span>');
+  if (r.has_common_areas) tags.push('<span class="amenity-tag amenity-common">Common</span>');
+  if (tags.length === 0) return '<span style="color:#ccc;font-size:12px;">—</span>';
+  return '<div class="amenity-icons">' + tags.join('') + '</div>';
+}
+
+function truncate(s, max) {
+  if (!s) return '—';
+  return s.length > max ? s.slice(0, max) + '...' : s;
+}
+
+function clearAllFilters() {
+  document.getElementById('filter-state').value = '';
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-min-units').value = '';
+  document.getElementById('filter-type').value = '';
+  document.getElementById('filter-mgmt').value = '';
+  document.getElementById('filter-status').value = '';
+  document.getElementById('filter-amenity').value = '';
+  document.getElementById('filter-mgmt-company').value = '';
+  selectedCounties.clear();
+  renderCountyChips();
+  page = 0;
+  applyFilters();
+}
+
+// ── Event listeners ────────────────────────────────────
+document.getElementById('filter-state').addEventListener('change', () => { page = 0; applyFilters(); });
+document.getElementById('filter-search').addEventListener('input', debounce(() => { page = 0; applyFilters(); }, 250));
+document.getElementById('filter-min-units').addEventListener('input', debounce(() => { page = 0; applyFilters(); }, 250));
+document.getElementById('filter-type').addEventListener('change', () => { page = 0; applyFilters(); });
+document.getElementById('filter-mgmt').addEventListener('change', () => { page = 0; applyFilters(); });
+document.getElementById('filter-status').addEventListener('change', () => { page = 0; applyFilters(); });
+document.getElementById('filter-amenity').addEventListener('change', () => { page = 0; applyFilters(); });
+document.getElementById('filter-mgmt-company').addEventListener('input', debounce(() => { page = 0; applyFilters(); }, 250));
+document.getElementById('clear-filters').addEventListener('click', clearAllFilters);
+document.getElementById('sort-select').addEventListener('change', () => { page = 0; applyFilters(); });
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
+
+// ── Go ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

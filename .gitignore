@@ -1,0 +1,13 @@
+data/raw/
+data/processed/
+data/output/
+data/*.db
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.claude/
+.DS_Store
+.vercel
