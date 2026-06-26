@@ -741,14 +741,14 @@ body {
         <div class="kpi-sub" id="kpi-self-sub">potential opportunities</div>
       </div>
       <div class="kpi-card highlight">
-        <div class="kpi-label"><span class="dot blue"></span> Avg. Units</div>
+        <div class="kpi-label"><span class="dot blue"></span> Avg. Doors</div>
         <div class="kpi-value" id="kpi-units">—</div>
         <div class="kpi-sub">per community</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Property Data</div>
+        <div class="kpi-label">With Door Count</div>
         <div class="kpi-value" id="kpi-propdata">—</div>
-        <div class="kpi-sub" id="kpi-propdata-sub">with property values</div>
+        <div class="kpi-sub" id="kpi-propdata-sub">have unit data</div>
       </div>
     </div>
 
@@ -768,7 +768,7 @@ body {
           <input type="text" id="filter-search" placeholder="Community name or address...">
         </div>
         <div class="filter-group">
-          <label>Min Units</label>
+          <label>Min Doors</label>
           <input type="number" id="filter-min-units" placeholder="e.g. 20" min="0">
         </div>
         <div class="filter-group">
@@ -827,11 +827,8 @@ body {
       <div class="sort-group">
         <label>Sort by</label>
         <select id="sort-select">
-          <option value="unit_count_desc">Units (largest first)</option>
-          <option value="unit_count_asc">Units (smallest first)</option>
-          <option value="value_desc">Property Value (highest)</option>
-          <option value="value_asc">Property Value (lowest)</option>
-          <option value="sale_desc">Sale Price (highest)</option>
+          <option value="unit_count_desc">Doors (largest first)</option>
+          <option value="unit_count_asc">Doors (smallest first)</option>
           <option value="name_asc">Name A-Z</option>
           <option value="name_desc">Name Z-A</option>
           <option value="mgmt_asc">Mgmt Company A-Z</option>
@@ -850,9 +847,7 @@ body {
             <th>Community Name</th>
             <th>County</th>
             <th>Type</th>
-            <th>Units</th>
-            <th>Property Value</th>
-            <th>Avg Sale Price</th>
+            <th>Doors</th>
             <th>Amenities</th>
             <th>Status</th>
             <th>Mgmt Company</th>
@@ -860,7 +855,7 @@ body {
           </tr>
         </thead>
         <tbody id="table-body">
-          <tr><td colspan="10"><div class="loading-overlay"><div class="spinner"></div>Loading prospect data...</div></td></tr>
+          <tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div>Loading prospect data...</div></td></tr>
         </tbody>
       </table>
       <div class="pagination" id="pagination"></div>
@@ -912,7 +907,7 @@ async function init() {
     counties = await fetchJson(['/data/counties.json', '/api/counties']);
   } catch (err) {
     document.getElementById('table-body').innerHTML =
-      '<tr><td colspan="10" style="padding:24px;color:#b00020;">Failed to load prospect data. Run <code>python scripts/build_viewer_data.py --demo</code> locally or start <code>python viewer/server.py</code>.</td></tr>';
+      '<tr><td colspan="8" style="padding:24px;color:#b00020;">Failed to load prospect data. Run <code>python scripts/build_viewer_data.py --demo</code> locally or start <code>python viewer/server.py</code>.</td></tr>';
     console.error(err);
     return;
   }
@@ -944,10 +939,15 @@ function populateStateDropdown() {
 }
 
 // ── County chips ───────────────────────────────────────
+const PRIORITY_COUNTIES = ['Sarasota'];
+
 function renderCountyChips() {
   const container = document.getElementById('county-chips');
-  // Show top 20 counties
-  const top = counties.slice(0, 20);
+  const pinned = PRIORITY_COUNTIES
+    .map(name => counties.find(c => c.name === name))
+    .filter(Boolean);
+  const rest = counties.filter(c => !PRIORITY_COUNTIES.includes(c.name));
+  const top = [...pinned, ...rest].slice(0, 21);
   container.innerHTML = top.map(c => {
     const sel = selectedCounties.has(c.name) ? ' selected' : '';
     return `<button class="county-chip${sel}" data-county="${c.name}">${c.name} <span class="count">(${c.count.toLocaleString()})</span></button>`;
@@ -1016,9 +1016,6 @@ function applySorting() {
     switch (sort) {
       case 'unit_count_desc': return (b.unit_count || 0) - (a.unit_count || 0);
       case 'unit_count_asc': return (a.unit_count || 0) - (b.unit_count || 0);
-      case 'value_desc': return (b.property_value || 0) - (a.property_value || 0);
-      case 'value_asc': return (a.property_value || 0) - (b.property_value || 0);
-      case 'sale_desc': return (b.avg_sale_price || 0) - (a.avg_sale_price || 0);
       case 'name_asc': return (a.community_name || '').localeCompare(b.community_name || '');
       case 'name_desc': return (b.community_name || '').localeCompare(a.community_name || '');
       case 'mgmt_asc': return (a.management_company_name || 'zzz').localeCompare(b.management_company_name || 'zzz');
@@ -1045,10 +1042,10 @@ function updateKPIs() {
     : 0;
   document.getElementById('kpi-units').textContent = avgUnits.toLocaleString();
 
-  const withPropData = filtered.filter(r => r.property_value != null && r.property_value > 0).length;
-  document.getElementById('kpi-propdata').textContent = withPropData.toLocaleString();
+  const withDoorCount = filtered.filter(r => r.unit_count != null && r.unit_count > 0).length;
+  document.getElementById('kpi-propdata').textContent = withDoorCount.toLocaleString();
   document.getElementById('kpi-propdata-sub').textContent =
-    `${((withPropData / Math.max(filtered.length, 1)) * 100).toFixed(0)}% have property values`;
+    `${((withDoorCount / Math.max(filtered.length, 1)) * 100).toFixed(0)}% have door counts`;
 }
 
 // ── Table rendering ────────────────────────────────────
@@ -1058,7 +1055,7 @@ function renderTable() {
   const pageData = filtered.slice(start, start + PAGE_SIZE);
 
   if (pageData.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#888;">No prospects match your filters. Try broadening your search.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">No prospects match your filters. Try broadening your search.</td></tr>';
   } else {
     tbody.innerHTML = pageData.map(r => `
       <tr style="cursor:pointer" data-id="${r._id}">
@@ -1066,8 +1063,6 @@ function renderTable() {
         <td>${esc(r.county || '—')}</td>
         <td>${typeBadge(r.community_type)}</td>
         <td>${r.unit_count != null ? r.unit_count.toLocaleString() : '—'}</td>
-        <td>${fmtDollar(r.property_value)}</td>
-        <td>${fmtDollar(r.avg_sale_price)}</td>
         <td>${amenityIcons(r)}</td>
         <td>${statusDot(r.filing_status)} ${esc(capitalize(r.filing_status || 'unknown'))}</td>
         <td title="${esc(r.management_company_name)}">${esc(truncate(r.management_company_name, 30))}</td>
@@ -1206,7 +1201,7 @@ function openDrawer(id) {
   if (r.has_pool) badgeHtml += '<span class="amenity-tag amenity-pool">Pool</span>';
   if (r.has_common_areas) badgeHtml += '<span class="amenity-tag amenity-common">Common Areas</span>';
   badgeHtml += `<span class="badge badge-unknown">${r.county || ''}, ${r.state || ''}</span>`;
-  if (r.unit_count != null) badgeHtml += `<span class="badge badge-unknown">${r.unit_count} units</span>`;
+  if (r.unit_count != null) badgeHtml += `<span class="badge badge-unknown">${r.unit_count.toLocaleString()} doors</span>`;
   document.getElementById('drawer-badges').innerHTML = badgeHtml;
 
   // Map
@@ -1220,17 +1215,10 @@ function openDrawer(id) {
   const sections = [
     { title: 'Community Details', fields: [
       ['Type', capitalize(r.community_type)],
-      ['Unit Count', r.unit_count != null ? r.unit_count.toLocaleString() : '—'],
+      ['Door Count', r.unit_count != null ? r.unit_count.toLocaleString() : '—'],
       ['Established', r.date_established || '—'],
       ['Filing Status', capitalize(r.filing_status), r.filing_status === 'delinquent' ? 'highlight' : ''],
       ['Management', mgmtLabel(r.management_status)],
-    ]},
-    { title: 'Property Valuation', fields: [
-      ['Total Property Value', r.property_value != null ? '$' + r.property_value.toLocaleString() : null, 'highlight'],
-      ['Avg Unit Value', r.avg_unit_value != null ? '$' + r.avg_unit_value.toLocaleString() : null],
-      ['Median Value', r.median_value != null ? '$' + r.median_value.toLocaleString() : null],
-      ['Avg Sale Price', r.avg_sale_price != null ? '$' + r.avg_sale_price.toLocaleString() : null],
-      ['Max Sale Price', r.max_sale_price != null ? '$' + r.max_sale_price.toLocaleString() : null],
     ]},
     { title: 'Buildings & Land', fields: [
       ['Total Parcels', r.total_parcels],
@@ -1256,11 +1244,9 @@ function openDrawer(id) {
       ['Name', r.registered_agent_name],
       ['Address', r.registered_agent_address],
     ]},
-    { title: 'Data Match', fields: [
+    { title: 'Data Source', fields: [
       ['Source', r.source],
       ['Source ID', r.source_id],
-      ['Property Match', r.prop_match_name],
-      ['Match Confidence', r.prop_match_score > 0 ? (r.prop_match_score * 100).toFixed(0) + '%' : null],
     ]},
   ];
 

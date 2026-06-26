@@ -26,10 +26,19 @@ def build_counties(rows: list[dict]) -> list[dict]:
     return [{"name": name, "count": count} for name, count in counts.most_common()]
 
 
-def select_demo_rows(rows: list[dict], limit: int) -> list[dict]:
-    """Prefer records with unit counts and property enrichment for demos."""
+def select_demo_rows(
+    rows: list[dict],
+    limit: int,
+    include_counties: list[str] | None = None,
+) -> list[dict]:
+    """Prefer records with unit counts; always include named counties in full."""
+    include = {c.strip().lower() for c in (include_counties or []) if c.strip()}
+
+    pinned = [r for r in rows if (r.get("county") or "").strip().lower() in include]
+    rest = [r for r in rows if (r.get("county") or "").strip().lower() not in include]
+
     scored = []
-    for row in rows:
+    for row in rest:
         score = 0
         if row.get("unit_count"):
             score += 2
@@ -42,7 +51,8 @@ def select_demo_rows(rows: list[dict], limit: int) -> list[dict]:
         scored.append((score, row))
 
     scored.sort(key=lambda item: (-item[0], item[1].get("community_name") or ""))
-    return [row for _, row in scored[:limit]]
+    remaining = max(0, limit - len(pinned))
+    return pinned + [row for _, row in scored[:remaining]]
 
 
 def main() -> None:
@@ -56,7 +66,12 @@ def main() -> None:
         "--limit",
         type=int,
         default=5000,
-        help="Max records when using --demo (default: 5000)",
+        help="Max records when using --demo (default: 5000, plus any --include-counties)",
+    )
+    parser.add_argument(
+        "--include-counties",
+        default="Sarasota",
+        help="Comma-separated counties to always include in full when using --demo (default: Sarasota)",
     )
     args = parser.parse_args()
 
@@ -66,8 +81,10 @@ def main() -> None:
     rows = load_csv()
 
     if args.demo:
-        rows = select_demo_rows(rows, args.limit)
-        print(f"  Demo mode: exporting top {len(rows)} records")
+        include = [c.strip() for c in args.include_counties.split(",") if c.strip()]
+        rows = select_demo_rows(rows, args.limit, include_counties=include)
+        pinned = sum(1 for r in rows if (r.get("county") or "").strip() in include)
+        print(f"  Demo mode: exporting {len(rows):,} records ({pinned:,} from {', '.join(include)})")
 
     counties = build_counties(rows)
 

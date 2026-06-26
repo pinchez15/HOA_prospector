@@ -220,7 +220,8 @@ def find_best_match(hoa_row, by_zip, by_county, by_name):
             best_score = score
             best_match = prop
 
-    # Only accept matches above threshold
+    # Only accept matches above threshold. Note: FL assessment rolls list
+    # individual unit owners, not HOA association names — matches are often wrong.
     if best_score >= 0.25:
         return best_match, best_score
 
