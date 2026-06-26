@@ -736,9 +736,9 @@ body {
         <div class="kpi-sub">matching your filters</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label"><span class="dot gold"></span> Self-Managed</div>
-        <div class="kpi-value" id="kpi-self">—</div>
-        <div class="kpi-sub" id="kpi-self-sub">potential opportunities</div>
+        <div class="kpi-label"><span class="dot gold"></span> Delinquent</div>
+        <div class="kpi-value" id="kpi-delinquent">—</div>
+        <div class="kpi-sub" id="kpi-delinquent-sub">delinquent filings</div>
       </div>
       <div class="kpi-card highlight">
         <div class="kpi-label"><span class="dot blue"></span> Avg. Doors</div>
@@ -1048,10 +1048,10 @@ function applySorting() {
 function updateKPIs() {
   document.getElementById('kpi-total').textContent = filtered.length.toLocaleString();
 
-  const selfManaged = filtered.filter(r => r.management_status === 'self_managed').length;
-  document.getElementById('kpi-self').textContent = selfManaged.toLocaleString();
-  document.getElementById('kpi-self-sub').textContent =
-    `${((selfManaged / Math.max(filtered.length, 1)) * 100).toFixed(0)}% of filtered`;
+  const delinquent = filtered.filter(r => r.filing_status === 'delinquent').length;
+  document.getElementById('kpi-delinquent').textContent = delinquent.toLocaleString();
+  document.getElementById('kpi-delinquent-sub').textContent =
+    `${((delinquent / Math.max(filtered.length, 1)) * 100).toFixed(0)}% of filtered`;
 
   const withUnits = filtered.filter(r => r.unit_count != null && r.unit_count > 0);
   const avgUnits = withUnits.length > 0
