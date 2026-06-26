@@ -1,0 +1,10 @@
+data/raw/
+data/processed/
+data/output/
+data/*.db
+.venv/
+__pycache__/
+*.pyc
+.git/
+.claude/
+tests/
